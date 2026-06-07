@@ -1,0 +1,555 @@
+{
+  "BUSINESS_PARTNER": {
+    "NAME1": [
+      "NAMORG1",
+      "NAME_ORG1",
+      "FIRSTNAME",
+      "NAME_FIRST"
+    ],
+    "NAME2": [
+      "NAMORG2",
+      "NAME_ORG2",
+      "LASTNAME",
+      "NAME_LAST"
+    ],
+    "NAME3": [
+      "NAMORG3",
+      "NAME_ORG3"
+    ],
+    "NAME4": [
+      "NAMORG4",
+      "NAME_ORG4"
+    ],
+    "NAMECOMBINED": [
+      "MC_NAME1",
+      "SORTL",
+      "SORT1"
+    ],
+    "SORTL": [
+      "SORT1",
+      "MC_NAME1"
+    ],
+    "LAND1": [
+      "COUNTRY",
+      "COUNTRY_ISO"
+    ],
+    "ORT01": [
+      "CITY1",
+      "CITY"
+    ],
+    "ORT02": [
+      "CITY2",
+      "CITY_DISTRICT"
+    ],
+    "PSTLZ": [
+      "POST_CODE1",
+      "POST_CODE2",
+      "POSTAL_CODE",
+      "POSTL_COD1"
+    ],
+    "PSTL2": [
+      "POST_CODE2",
+      "PO_BOX_PCODE"
+    ],
+    "STRAS": [
+      "STREET",
+      "STREET_LONG",
+      "STREETNAME",
+      "STR_SUPPL1"
+    ],
+    "TELF1": [
+      "TELNR_LONG",
+      "PHONE1",
+      "TELEPHONE"
+    ],
+    "TELF2": [
+      "TELNR_LONG_2",
+      "PHONE2"
+    ],
+    "TELFX": [
+      "FAXNR_LONG",
+      "FAX"
+    ],
+    "ADRNR": [
+      "ADDRNUMBER",
+      "ADDRESS_ID"
+    ],
+    "BAHNS": [
+      "TRAIN_STATION"
+    ],
+    "BRSCH": [
+      "INDUSTRY",
+      "INDUSTRY_SECTOR"
+    ],
+    "BUBKZ": [
+      "CENTRAL_DEL_BLOCK"
+    ],
+    "COUNC": [
+      "COUNTY_CODE"
+    ],
+    "ERDAT": [
+      "CRDAT",
+      "CREATION_DATE",
+      "CREATED_ON"
+    ],
+    "ERNAM": [
+      "CRNAM",
+      "CREATED_BY"
+    ],
+    "EXABL": [
+      "UNLOADING_POINTS"
+    ],
+    "FAKSD": [
+      "BILLING_BLOCK",
+      "FAKSP"
+    ],
+    "FISKN": [
+      "TAX_PARTNER"
+    ],
+    "KNAZK": [
+      "WORKING_TIMES"
+    ],
+    "KNRZA": [
+      "ALTERNATIVE_PAYEE"
+    ],
+    "LIFSD": [
+      "DELIVERY_BLOCK",
+      "LIFSP"
+    ],
+    "LOCCO": [
+      "COUNTY"
+    ],
+    "LOEVM": [
+      "DELETION_FLAG",
+      "XDELE"
+    ],
+    "MCOD1": [
+      "MC_SEARCH_TERM1",
+      "MC_NAME1"
+    ],
+    "MCOD2": [
+      "MC_SEARCH_TERM2"
+    ],
+    "MCOD3": [
+      "MC_SEARCH_TERM3"
+    ],
+    "NIELS": [
+      "NIELSEN_ID"
+    ],
+    "PFACH": [
+      "PO_BOX"
+    ],
+    "REGIO": [
+      "REGION",
+      "STATE"
+    ],
+    "RPMKR": [
+      "REGIONAL_MARKET"
+    ],
+    "SPRAS": [
+      "LANGU",
+      "LANGUAGE",
+      "LANGU_CORR"
+    ],
+    "XCPDK": [
+      "ONE_TIME_ACCOUNT"
+    ],
+    "XZEMP": [
+      "PAYMENT_BLOCK"
+    ]
+  },
+  "CUSTOMER": {
+    "NAME1": [
+      "NAMORG1",
+      "NAME_ORG1"
+    ],
+    "NAME2": [
+      "NAMORG2",
+      "NAME_ORG2"
+    ],
+    "NAME3": [
+      "NAMORG3",
+      "NAME_ORG3"
+    ],
+    "NAME4": [
+      "NAMORG4",
+      "NAME_ORG4"
+    ],
+    "LAND1": [
+      "COUNTRY"
+    ],
+    "ORT01": [
+      "CITY1",
+      "CITY"
+    ],
+    "ORT02": [
+      "CITY2"
+    ],
+    "PSTLZ": [
+      "POST_CODE1",
+      "POSTAL_CODE"
+    ],
+    "STRAS": [
+      "STREET",
+      "STREET_LONG"
+    ],
+    "TELF1": [
+      "TELNR_LONG"
+    ],
+    "TELF2": [
+      "TELNR_LONG_2"
+    ],
+    "TELFX": [
+      "FAXNR_LONG"
+    ],
+    "REGIO": [
+      "REGION"
+    ],
+    "SPRAS": [
+      "LANGU",
+      "LANGUAGE"
+    ],
+    "SORTL": [
+      "SORT1"
+    ],
+    "ERDAT": [
+      "CRDAT",
+      "CREATION_DATE"
+    ],
+    "ERNAM": [
+      "CREATED_BY"
+    ],
+    "ADRNR": [
+      "ADDRNUMBER"
+    ],
+    "LOEVM": [
+      "DELETION_FLAG"
+    ],
+    "BRSCH": [
+      "INDUSTRY_SECTOR"
+    ]
+  },
+  "VENDOR": {
+    "NAME1": [
+      "NAMORG1",
+      "NAME_ORG1"
+    ],
+    "NAME2": [
+      "NAMORG2",
+      "NAME_ORG2"
+    ],
+    "NAME3": [
+      "NAMORG3"
+    ],
+    "NAME4": [
+      "NAMORG4"
+    ],
+    "LAND1": [
+      "COUNTRY"
+    ],
+    "ORT01": [
+      "CITY1",
+      "CITY"
+    ],
+    "ORT02": [
+      "CITY2"
+    ],
+    "PSTLZ": [
+      "POST_CODE1",
+      "POSTAL_CODE"
+    ],
+    "STRAS": [
+      "STREET",
+      "STREET_LONG"
+    ],
+    "TELF1": [
+      "TELNR_LONG"
+    ],
+    "TELFX": [
+      "FAXNR_LONG"
+    ],
+    "REGIO": [
+      "REGION"
+    ],
+    "SPRAS": [
+      "LANGU",
+      "LANGUAGE"
+    ],
+    "SORTL": [
+      "SORT1"
+    ],
+    "ERDAT": [
+      "CRDAT",
+      "CREATION_DATE"
+    ],
+    "ERNAM": [
+      "CREATED_BY"
+    ]
+  },
+  "MATERIAL": {
+    "MATNR": [
+      "PRODUCT",
+      "MATERIAL_ID"
+    ],
+    "MAKTX": [
+      "MAKTG",
+      "DESCRIPTION"
+    ],
+    "MTART": [
+      "PRODUCT_TYPE",
+      "MATERIAL_TYPE"
+    ],
+    "MEINS": [
+      "BASE_UNIT",
+      "UNIT_OF_MEASURE"
+    ],
+    "MATKL": [
+      "PRODUCT_GROUP",
+      "MATERIAL_GROUP"
+    ],
+    "BRGEW": [
+      "GROSS_WEIGHT"
+    ],
+    "NTGEW": [
+      "NET_WEIGHT"
+    ],
+    "GEWEI": [
+      "WEIGHT_UNIT"
+    ],
+    "STPRS": [
+      "STANDARD_PRICE"
+    ],
+    "VPRSV": [
+      "PRICE_CONTROL"
+    ],
+    "PEINH": [
+      "PRICE_UNIT"
+    ],
+    "BKLAS": [
+      "VALUATION_CLASS"
+    ]
+  },
+  "GL_ACCOUNT": {
+    "SAKNR": [
+      "GLACCOUNT",
+      "GL_ACCOUNT",
+      "ACCOUNT"
+    ],
+    "TXT20": [
+      "SHORT_TEXT",
+      "DESCRIPTION"
+    ],
+    "TXT50": [
+      "LONG_TEXT",
+      "LONG_DESCRIPTION"
+    ],
+    "KTOKS": [
+      "ACCOUNT_GROUP"
+    ],
+    "XBILK": [
+      "BALANCE_SHEET"
+    ],
+    "FSTAG": [
+      "FIELD_STATUS_GROUP"
+    ]
+  },
+  "OPEN_ITEMS_AR": {
+    "BELNR": [
+      "DOCUMENT_NUMBER",
+      "DOC_NUMBER"
+    ],
+    "WRBTR": [
+      "AMOUNT",
+      "AMOUNT_DOC_CURR"
+    ],
+    "DMBTR": [
+      "AMOUNT_LC",
+      "AMOUNT_LOCAL"
+    ],
+    "BLDAT": [
+      "DOCUMENT_DATE"
+    ],
+    "BUDAT": [
+      "POSTING_DATE"
+    ],
+    "ZTERM": [
+      "PAYMENT_TERMS"
+    ]
+  },
+  "OPEN_ITEMS_AP": {
+    "BELNR": [
+      "DOCUMENT_NUMBER",
+      "DOC_NUMBER"
+    ],
+    "WRBTR": [
+      "AMOUNT",
+      "AMOUNT_DOC_CURR"
+    ],
+    "DMBTR": [
+      "AMOUNT_LC",
+      "AMOUNT_LOCAL"
+    ],
+    "BLDAT": [
+      "DOCUMENT_DATE"
+    ],
+    "BUDAT": [
+      "POSTING_DATE"
+    ],
+    "ZTERM": [
+      "PAYMENT_TERMS"
+    ]
+  },
+  "GLOBAL": {
+    "LAND1": [
+      "COUNTRY",
+      "COUNTRY_ISO",
+      "CNTRY"
+    ],
+    "ORT01": [
+      "CITY1",
+      "CITY",
+      "CITY_NAME"
+    ],
+    "ORT02": [
+      "CITY2",
+      "DISTRICT"
+    ],
+    "PSTLZ": [
+      "POST_CODE1",
+      "POST_CODE2",
+      "POSTAL_CODE",
+      "POSTL_COD1",
+      "ZIP"
+    ],
+    "STRAS": [
+      "STREET",
+      "STREET_LONG",
+      "STREETNAME"
+    ],
+    "REGIO": [
+      "REGION",
+      "STATE",
+      "PROVINCE"
+    ],
+    "SPRAS": [
+      "LANGU",
+      "LANGUAGE",
+      "LANG"
+    ],
+    "TELF1": [
+      "TELNR_LONG",
+      "PHONE",
+      "TELEPHONE"
+    ],
+    "TELFX": [
+      "FAXNR_LONG",
+      "FAX"
+    ],
+    "ERDAT": [
+      "CRDAT",
+      "CREATION_DATE",
+      "CREATED_ON"
+    ],
+    "ERNAM": [
+      "CREATED_BY",
+      "CRNAM"
+    ],
+    "SORTL": [
+      "SORT1",
+      "SEARCH_TERM"
+    ],
+    "NAME1": [
+      "NAMORG1",
+      "NAME_ORG1",
+      "FULLNAME"
+    ],
+    "NAME2": [
+      "NAMORG2",
+      "NAME_ORG2"
+    ],
+    "LOEVM": [
+      "DELETION_FLAG",
+      "XDELE"
+    ]
+  },
+  "WORK_CENTER": {
+    "ARBPL": [
+      "Work Center",
+      "WORKCENTER",
+      "WORKCENTERNAME"
+    ],
+    "VERWE": [
+      "Work Center Category",
+      "WORKCENTERCAT"
+    ],
+    "KTEXT": [
+      "Description",
+      "Short Description",
+      "DESCRIPTION"
+    ],
+    "VERAN": [
+      "Person Responsible",
+      "Responsible"
+    ],
+    "STAND": [
+      "Work Center Usage",
+      "Usage"
+    ],
+    "BEGDA": [
+      "Valid-From Date",
+      "Valid From Date",
+      "Start Date",
+      "DATAB"
+    ],
+    "ENDDA": [
+      "Valid-To Date",
+      "Valid To Date",
+      "End Date",
+      "DATBI"
+    ],
+    "CANUM": [
+      "Capacity ID",
+      "Capacity Allocation Number"
+    ],
+    "KAPAR": [
+      "Capacity Category"
+    ],
+    "SPRAS": [
+      "Language Key",
+      "Language"
+    ],
+    "LOANZ": [
+      "Number of Confirmation Slips"
+    ],
+    "RSANZ": [
+      "Number of Time Tickets"
+    ],
+    "PLANV": [
+      "Plan Version"
+    ],
+    "PRVBE": [
+      "Production Supply Area"
+    ],
+    "SUBSYS": [
+      "Scheduling"
+    ],
+    "ORTGR": [
+      "Location Group"
+    ],
+    "STEUS": [
+      "Operation Control Profile"
+    ],
+    "VGWTS": [
+      "Standard Value Key"
+    ],
+    "ZWNOR": [
+      "Standard Queue Time"
+    ],
+    "ZWMIN": [
+      "Minimum Queue Time"
+    ],
+    "VGDIM": [
+      "Unit of Measure of Work"
+    ]
+  }
+}
