@@ -7,6 +7,8 @@ Validates source extracts against target exports — field by field, record by r
 
 ```bash
 # Install
+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
+
 pip install -r requirements.txt
 
 # Run (always from the project root)
