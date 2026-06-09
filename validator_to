@@ -8,6 +8,12 @@ Join key philosophy:
     and tells the user to select keys from the UI
   - Composite key = "VAL1||VAL2||VAL3" column built from selected fields
   - Every field merge uses this composite key — no single-column joins
+
+Numeric tolerance REMOVED:
+  - All fields are compared as normalised strings (strip + upper)
+  - No tolerance detection, no tolerance_map, no numeric detection heuristics
+  - is_numeric flag and tolerance_used are retained in FieldResult for
+    backwards-compatibility with UI rendering but are always False/None
 """
 
 import pandas as pd
@@ -34,9 +40,9 @@ class FieldResult:
     mismatched:        int
     missing_in_target: int
     missing_in_source: int
-    is_numeric:        bool  = False
+    is_numeric:        bool  = False   # always False — tolerance removed
     is_key_field:      bool  = False   # True when this field is a join key
-    tolerance_used:    float = None
+    tolerance_used:    float = None    # always None — tolerance removed
     pass_threshold:    float = DEFAULT_PASS_THRESHOLD
     mismatch_details:  list  = field(default_factory=list)
 
@@ -58,8 +64,8 @@ class MappingReport:
     matched_fields:     list
     source_only_fields: list
     target_only_fields: list
-    numeric_fields:     list
-    tolerance_map:      dict
+    numeric_fields:     list           # always [] — tolerance removed
+    tolerance_map:      dict           # always {} — tolerance removed
     total_source_cols:  int
     total_target_cols:  int
     selected_fields:    list  = field(default_factory=list)
@@ -119,18 +125,25 @@ class MaterialValidator:
     def __init__(
         self,
         field_map:           Dict[str, str] = None,
-        tolerance_map:       dict  = None,
+        tolerance_map:       dict  = None,     # accepted but ignored — tolerance removed
         join_key:            str   = None,     # single key (legacy)
         join_keys:           List[str] = None, # composite key (new)
         manual_join_keys:    List[str] = None, # user-selected from UI (highest priority)
         pass_threshold:      float = DEFAULT_PASS_THRESHOLD,
         selected_fields:     list  = None,
-        numeric_sample_rows: int   = 200,
-        numeric_threshold:   float = 0.80,
+        numeric_sample_rows: int   = 200,      # accepted but unused — tolerance removed
+        numeric_threshold:   float = 0.80,     # accepted but unused — tolerance removed
         custom_labels              = None,
     ):
-        self.field_map           = field_map
-        self.tolerance_overrides = tolerance_map or {}
+        self.field_map = field_map
+
+        # tolerance_map / numeric_* params accepted for backwards-compatibility
+        # but are not used anywhere in the validation logic
+        if tolerance_map:
+            logger.warning(
+                "tolerance_map was provided but numeric tolerance has been removed. "
+                "All fields will be compared as strings."
+            )
 
         # Join key priority: manual_join_keys > join_keys > join_key (single)
         if manual_join_keys:
@@ -142,10 +155,8 @@ class MaterialValidator:
         else:
             self.manual_join_keys = []
 
-        self.pass_threshold      = pass_threshold
-        self.selected_fields     = [f.strip().upper() for f in (selected_fields or [])]
-        self.numeric_sample_rows = numeric_sample_rows
-        self.numeric_threshold   = numeric_threshold
+        self.pass_threshold  = pass_threshold
+        self.selected_fields = [f.strip().upper() for f in (selected_fields or [])]
 
         from core.field_labels import load_custom_labels
         if isinstance(custom_labels, str):
@@ -192,9 +203,9 @@ class MaterialValidator:
             valid_keys = [k for k in self.manual_join_keys
                          if k in set(src_hdrs) and k in set(tgt_hdrs)]
             if valid_keys:
-                join_keys         = valid_keys
-                detection_method  = "manual"
-                confidence        = "high"
+                join_keys        = valid_keys
+                detection_method = "manual"
+                confidence       = "high"
                 logger.info(f"Using user-selected join keys: {join_keys}")
             else:
                 # Keys specified but not found in files
@@ -215,7 +226,6 @@ class MaterialValidator:
         # Priority 2: auto-detect using key_detector (suggestion only)
         else:
             try:
-                # Load a small sample just for key detection (fast)
                 src_sample = self._load_file_cols(source_path, source_delimiter,
                                                    common_cols, nrows=2000)
                 tgt_sample = self._load_file_cols(target_path, target_delimiter,
@@ -318,19 +328,14 @@ class MaterialValidator:
         # ── Step 7: Separate join keys from regular fields ────────────────────
         # Join key fields ARE validated (value comparison across matched records)
         # but displayed with a special "KEY" badge in the dashboard.
-        jk_set         = set(join_keys)
-        key_field_map  = {k: k for k in join_keys
-                          if k in src_df.columns and k in tgt_df.columns}
+        jk_set        = set(join_keys)
+        key_field_map = {k: k for k in join_keys
+                         if k in src_df.columns and k in tgt_df.columns}
         data_field_map = {s: t for s, t in field_map.items()
                           if s not in jk_set and t not in jk_set
                           and s in src_df.columns and t in tgt_df.columns}
 
-        # ── Step 8: Numeric detection (data fields only) ──────────────────────
-        pairs   = list(data_field_map.items())
-        tol_map = self._detect_numeric_mapped(src_df, tgt_df, pairs)
-        tol_map.update(self.tolerance_overrides)
-
-        # ── Step 9: Mapping report ─────────────────────────────────────────────
+        # ── Step 8: Mapping report ─────────────────────────────────────────────
         from core.field_labels import get_label
         mapping_report = MappingReport(
             join_keys=join_keys,
@@ -338,15 +343,15 @@ class MaterialValidator:
             matched_fields=list(data_field_map.keys()),
             source_only_fields=sorted(set(src_hdrs) - set(tgt_hdrs) - jk_set),
             target_only_fields=sorted(set(tgt_hdrs) - set(src_hdrs) - jk_set),
-            numeric_fields=sorted(tol_map.keys()),
-            tolerance_map=tol_map,
+            numeric_fields=[],   # always empty — tolerance removed
+            tolerance_map={},    # always empty — tolerance removed
             total_source_cols=len(src_hdrs),
             total_target_cols=len(tgt_hdrs),
             selected_fields=self.selected_fields,
             pass_threshold=self.pass_threshold,
         )
 
-        # ── Step 10: Validate each field ──────────────────────────────────────
+        # ── Step 9: Validate each field ───────────────────────────────────────
         field_results = []
 
         # First: validate join key fields (marked as key fields)
@@ -354,7 +359,7 @@ class MaterialValidator:
             tgt_col = key_field_map.get(src_col, src_col)
             fr = self._validate_field_fast(
                 src_df, tgt_df, src_col, tgt_col,
-                join_keys, None, max_mismatch_rows,
+                join_keys, max_mismatch_rows,
                 is_key_field=True,
             )
             if fr:
@@ -362,10 +367,9 @@ class MaterialValidator:
 
         # Then: validate data fields
         for src_col, tgt_col in data_field_map.items():
-            tolerance = tol_map.get(src_col)
             fr = self._validate_field_fast(
                 src_df, tgt_df, src_col, tgt_col,
-                join_keys, tolerance, max_mismatch_rows,
+                join_keys, max_mismatch_rows,
             )
             if fr:
                 field_results.append(fr)
@@ -389,12 +393,12 @@ class MaterialValidator:
             common_columns=common_cols,
         )
 
-    # ── Per-field validation (2-column merge on composite key) ────────────────
+    # ── Per-field validation (strict string comparison, no tolerance) ─────────
 
     def _validate_field_fast(
         self,
         src_df, tgt_df, src_col, tgt_col, join_keys,
-        tolerance, max_rows, is_key_field=False,
+        max_rows, is_key_field=False,
     ):
         if src_col not in src_df.columns or tgt_col not in tgt_df.columns:
             return None
@@ -418,38 +422,27 @@ class MaterialValidator:
                 field_source=src_col, field_target=tgt_col,
                 field_label=self._label(src_col), total_records=0,
                 matched=0, mismatched=0, missing_in_target=0, missing_in_source=0,
-                is_numeric=(tolerance is not None), is_key_field=is_key_field,
-                tolerance_used=tolerance, pass_threshold=self.pass_threshold,
+                is_numeric=False, is_key_field=is_key_field,
+                tolerance_used=None, pass_threshold=self.pass_threshold,
             )
 
         sv = m[sv_col]
         tv = m[tv_col]
 
         # Null detection
-        NULL_VALS  = {"", "nan", "none", "null"}
-        sv_null    = sv.isna() | sv.astype(str).str.strip().str.lower().isin(NULL_VALS)
-        tv_null    = tv.isna() | tv.astype(str).str.strip().str.lower().isin(NULL_VALS)
-        both_null  = sv_null & tv_null
+        NULL_VALS = {"", "nan", "none", "null"}
+        sv_null   = sv.isna() | sv.astype(str).str.strip().str.lower().isin(NULL_VALS)
+        tv_null   = tv.isna() | tv.astype(str).str.strip().str.lower().isin(NULL_VALS)
+        both_null = sv_null & tv_null
         miss_src_m = sv_null & ~tv_null
         miss_tgt_m = ~sv_null & tv_null
         valid      = ~sv_null & ~tv_null
 
-        sv_v = sv[valid]
-        tv_v = tv[valid]
-
-        # Comparison
-        if tolerance is not None:
-            sv_f = pd.to_numeric(sv_v.astype(str).str.replace(",", ".", regex=False), errors="coerce")
-            tv_f = pd.to_numeric(tv_v.astype(str).str.replace(",", ".", regex=False), errors="coerce")
-            ok            = sv_f.notna() & tv_f.notna()
-            diff          = (sv_f - tv_f).abs()
-            match_mask    = ok & (diff <= tolerance)
-            mismatch_mask = ok & (diff > tolerance)
-        else:
-            sv_s = sv_v.astype(str).str.strip().str.upper()
-            tv_s = tv_v.astype(str).str.strip().str.upper()
-            match_mask    = sv_s == tv_s
-            mismatch_mask = ~match_mask
+        # Strict string comparison — strip whitespace and normalise case
+        sv_s = sv[valid].astype(str).str.strip().str.upper()
+        tv_s = tv[valid].astype(str).str.strip().str.upper()
+        match_mask    = sv_s == tv_s
+        mismatch_mask = ~match_mask
 
         matched        = int(both_null.sum()) + int(match_mask.sum())
         miss_src_count = int(miss_src_m.sum())
@@ -465,7 +458,7 @@ class MaterialValidator:
                 f"{k}={v}" for k, v in zip(join_keys, parts)
             )
 
-        # Build mismatch list with to_dict (fast)
+        # Build mismatch detail list
         mismatches = []
 
         if miss_src_count > 0:
@@ -488,33 +481,23 @@ class MaterialValidator:
 
         if mismatched > 0 and len(mismatches) < max_rows:
             mdf = m[valid][mismatch_mask].head(max_rows - len(mismatches))
-            if tolerance is not None:
-                sv_mf   = sv_f[mismatch_mask].reindex(mdf.index)
-                tv_mf   = tv_f[mismatch_mask].reindex(mdf.index)
-                diff_mf = diff[mismatch_mask].reindex(mdf.index)
-                for idx, r in zip(mdf.index, mdf.to_dict("records")):
-                    mismatches.append({
-                        "material":     _ck_label(r[_CK]),
-                        "source_value": round(float(sv_mf.get(idx, 0)), 4),
-                        "target_value": round(float(tv_mf.get(idx, 0)), 4),
-                        "issue":        f"Numeric delta (tolerance ±{tolerance})",
-                    })
-            else:
-                for r in mdf.to_dict("records"):
-                    mismatches.append({
-                        "material":     _ck_label(r[_CK]),
-                        "source_value": str(r.get(sv_col, "")),
-                        "target_value": str(r.get(tv_col, "")),
-                        "issue":        "Value mismatch",
-                    })
+            for r in mdf.to_dict("records"):
+                mismatches.append({
+                    "material":     _ck_label(r[_CK]),
+                    "source_value": str(r.get(sv_col, "")),
+                    "target_value": str(r.get(tv_col, "")),
+                    "issue":        "Value mismatch",
+                })
 
         return FieldResult(
             field_source=src_col, field_target=tgt_col,
             field_label=self._label(src_col),
             total_records=total, matched=matched, mismatched=mismatched,
             missing_in_target=miss_tgt_count, missing_in_source=miss_src_count,
-            is_numeric=(tolerance is not None), is_key_field=is_key_field,
-            tolerance_used=tolerance, pass_threshold=self.pass_threshold,
+            is_numeric=False,    # always False — tolerance removed
+            is_key_field=is_key_field,
+            tolerance_used=None, # always None — tolerance removed
+            pass_threshold=self.pass_threshold,
             mismatch_details=mismatches,
         )
 
@@ -566,42 +549,6 @@ class MaterialValidator:
         from pathlib import Path
         return Path(file_path).stem.upper()
 
-    # ── Numeric detection ─────────────────────────────────────────────────────
-
-    def _detect_numeric_mapped(self, src_df, tgt_df, pairs):
-        numeric_cols = {}
-        for src_col, tgt_col in pairs:
-            if src_col not in src_df.columns or tgt_col not in tgt_df.columns:
-                continue
-            sv = src_df[src_col].dropna().head(self.numeric_sample_rows)
-            tv = tgt_df[tgt_col].dropna().head(self.numeric_sample_rows)
-            if not len(sv) or not len(tv):
-                continue
-
-            def rate(s):
-                return (pd.to_numeric(
-                    s.astype(str).str.replace(",", ".", regex=False),
-                    errors="coerce").notna().sum() / len(s))
-
-            if rate(sv) >= self.numeric_threshold and rate(tv) >= self.numeric_threshold:
-                tol = self.tolerance_overrides.get(src_col)
-                if tol is None:
-                    all_v = pd.to_numeric(
-                        pd.concat([sv, tv]).astype(str)
-                        .str.replace(",", ".", regex=False), errors="coerce"
-                    ).dropna().abs()
-                    tol = self._scale_tolerance(float(all_v.median()) if len(all_v) else 0.0)
-                numeric_cols[src_col] = tol
-        return numeric_cols
-
-    @staticmethod
-    def _scale_tolerance(v):
-        if v == 0:     return 0.0
-        elif v < 1:    return 0.0001
-        elif v < 10:   return 0.001
-        elif v < 1000: return 0.01
-        else:          return 0.1
-
     # ── Legacy methods for backwards compatibility ────────────────────────────
 
     def _detect_join_key(self, src_df, tgt_df):
@@ -623,14 +570,11 @@ class MaterialValidator:
         src_cols = set(src_df.columns) - {join_key}
         tgt_cols = set(tgt_df.columns) - {join_key}
         if self.field_map:
-            vm  = {s.upper(): t.upper() for s, t in self.field_map.items()
-                   if s.upper() in src_df.columns and t.upper() in tgt_df.columns}
-            tol = self._detect_numeric_mapped(src_df, tgt_df, list(vm.items()))
+            vm = {s.upper(): t.upper() for s, t in self.field_map.items()
+                  if s.upper() in src_df.columns and t.upper() in tgt_df.columns}
         else:
             cols = sorted(src_cols & tgt_cols)
             vm   = {c: c for c in cols}
-            tol  = self._detect_numeric_mapped(src_df, tgt_df, list(vm.items()))
-        tol.update(self.tolerance_overrides)
         jks = self.manual_join_keys or [join_key]
         return vm, MappingReport(
             join_keys=jks,
@@ -638,7 +582,8 @@ class MaterialValidator:
             matched_fields=list(vm.keys()),
             source_only_fields=sorted(src_cols - tgt_cols),
             target_only_fields=sorted(tgt_cols - src_cols),
-            numeric_fields=sorted(tol.keys()), tolerance_map=tol,
+            numeric_fields=[],   # always empty — tolerance removed
+            tolerance_map={},    # always empty — tolerance removed
             total_source_cols=len(src_df.columns),
             total_target_cols=len(tgt_df.columns),
             selected_fields=self.selected_fields,
